@@ -7,11 +7,11 @@ const Blog = ({ blog, incrementLikes, deleteBlog }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
- }
+  }
 
- return (
-  <div className="blog" style={blogStyle}>
-     <div>
+  return (
+    <div className="blog" style={blogStyle}>
+      <div>
         {blog.title} , {blog.author}
         <Togglable buttonShowLabel="view" buttonHideLabel="hide">
           <div>{blog.url}</div>
@@ -19,9 +19,9 @@ const Blog = ({ blog, incrementLikes, deleteBlog }) => {
           <button onClick={incrementLikes}>like</button>
           <div>added by {blog.user.name}</div>
           <button onClick={deleteBlog}>delete</button>
-     </Togglable>
+        </Togglable>
+      </div>
     </div>
-  </div>
-)}
+  )}
 
 export default Blog

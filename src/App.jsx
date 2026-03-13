@@ -6,11 +6,11 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
- 
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [alertMessage, setAlertMessage] = useState(null)
   const [alertClassName, setAlertClassName] = useState('Error')
@@ -21,7 +21,7 @@ const App = () => {
       blogs.sort((a, b) => b.likes - a.likes)
       setBlogs( blogs )
     }
-    fetchBlogs() 
+    fetchBlogs()
   }, [])
 
   useEffect(() => {
@@ -64,12 +64,12 @@ const App = () => {
 
   const handleLogin = async event => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -118,18 +118,18 @@ const App = () => {
               <button onClick={handleLogout}>log out</button>
             </p>
           </h3>
-            <Togglable buttonShowLabel="new note" buttonHideLabel="cancel">
-              <BlogForm createBlog={addBlog} />
-            </Togglable>
-            <div>
-              {blogs.map(blog =>
-                <Blog 
-                  key={blog.id} 
-                  blog={blog} 
-                  incrementLikes={() => incrementLikes(blog.id)} 
-                  deleteBlog={() => deleteBlog(blog.id)} />
-              )}
-            </div>
+          <Togglable buttonShowLabel="new note" buttonHideLabel="cancel">
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
+          <div>
+            {blogs.map(blog =>
+              <Blog
+                key={blog.id}
+                blog={blog}
+                incrementLikes={() => incrementLikes(blog.id)}
+                deleteBlog={() => deleteBlog(blog.id)} />
+            )}
+          </div>
         </div>
       )}
     </div>
