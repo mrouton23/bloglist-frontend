@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Toggleable'
@@ -14,6 +14,8 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [alertMessage, setAlertMessage] = useState(null)
   const [alertClassName, setAlertClassName] = useState('Error')
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     async function fetchBlogs() {
@@ -34,8 +36,11 @@ const App = () => {
   }, [])
 
   const addBlog = blogObject => {
+    blogFormRef.current.toggleVisibility()
     blogService.create(blogObject).then(returnedBlog => {
-      setBlogs(blogs.concat(returnedBlog))
+      setBlogs(blogs
+        .concat(returnedBlog)
+        .sort((a, b) => b.likes - a.likes))
     })
   }
 
@@ -43,7 +48,9 @@ const App = () => {
     if(window.confirm('Are you sure you want to delete this blog?')) {
       await blogService.deleteBlog(id)
     }
-    setBlogs(blogs.filter(blog => blog.id !== id))
+    setBlogs(blogs
+      .filter(blog => blog.id !== id)
+      .sort((a, b) => b.likes - a.likes))
   }
 
   const incrementLikes = async (id) => {
@@ -51,7 +58,10 @@ const App = () => {
     const changedBlog = { ...blog, likes: blog.likes + 1 }
     try {
       await blogService.update(id, changedBlog)
-      setBlogs(blogs.map(blog => blog.id !== id ? blog : changedBlog))
+      
+      setBlogs(blogs
+        .map(blog => blog.id !== id ? blog : changedBlog)
+        .sort((a, b) => b.likes - a.likes))
     } catch (error) {
       setAlertMessage(`the blog '${blog.title}' was already removed from server. Error: ${error.message}`)
       setAlertClassName('error')
@@ -95,15 +105,18 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <Togglable buttonShowLabel="login" buttonHideLabel="cancel">
-      <LoginForm
-        username={username}
-        password={password}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleSubmit={handleLogin}
-      />
-    </Togglable>
+    <div>
+      <h3>Login</h3>
+      <Togglable buttonShowLabel="login" buttonHideLabel="cancel">
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
+      </Togglable>
+    </div>
   )
 
   return (
@@ -118,7 +131,7 @@ const App = () => {
               <button onClick={handleLogout}>log out</button>
             </p>
           </h3>
-          <Togglable buttonShowLabel="new note" buttonHideLabel="cancel">
+          <Togglable buttonShowLabel="new blog" buttonHideLabel="cancel" ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
           </Togglable>
           <div>
